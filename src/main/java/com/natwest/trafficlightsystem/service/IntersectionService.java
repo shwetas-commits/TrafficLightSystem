@@ -1,8 +1,14 @@
 package com.natwest.trafficlightsystem.service;
 
-import com.natwest.trafficlightsystem.domain.intersection.Intersection;
+import com.natwest.trafficlightsystem.domain.Intersection;
+import com.natwest.trafficlightsystem.domain.TrafficPhase;
+import com.natwest.trafficlightsystem.dto.IntersectionStateDto;
+import com.natwest.trafficlightsystem.dto.IntersectionMapper;
+import com.natwest.trafficlightsystem.dto.PhaseHistory;
+import com.natwest.trafficlightsystem.respository.PhaseHistoryRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -10,41 +16,61 @@ import java.util.concurrent.locks.ReentrantLock;
 public class IntersectionService {
 
     private final InMemoryIntersectionRegistry registry;
-    private final Lock lock = new ReentrantLock(); //mutual-exclusion lock - only one thread at a time can enter this section
+    private final PhaseHistoryRepository historyRepository;
+    private final Lock lock = new ReentrantLock();
 
-    public IntersectionService(InMemoryIntersectionRegistry registry) {
+    //can be moved to per-intersection later
+
+    public IntersectionService(InMemoryIntersectionRegistry registry,
+                               PhaseHistoryRepository historyRepository) {
         this.registry = registry;
+        this.historyRepository = historyRepository;
     }
 
-    public Intersection getIntersection(String id) {
-        return registry.get(id);
+    public IntersectionStateDto getState(String id) {
+        Intersection intersection = registry.get(id);
+        return IntersectionMapper.toStateDto(intersection);
     }
 
-    //only one thread can modify intersection state at a time
 
-    public void advancePhase(String intersectionId) {
-        lock.lock();
-        try {
-            Intersection intersection = registry.get(intersectionId); // fetches the in-memory value for this intersection
-            intersection.advancePhase();
-        } finally {
-            lock.unlock(); //releases the lock
-        }
+    public void start(String intersectionId) {
+        withLock(intersectionId, Intersection::start);
     }
 
     public void pause(String intersectionId) {
+        withLock(intersectionId, Intersection::pause);
+    }
+
+    public void resume(String intersectionId) {
+        withLock(intersectionId, Intersection::resume);
+    }
+
+    public List<PhaseHistory> getHistory(String intersectionId) {
+        return historyRepository.findByIntersectionId(intersectionId);
+    }
+
+
+    /** INTERNAL – called by scheduler */
+    public void advancePhase(String intersectionId) {
+        withLock(intersectionId, Intersection::advancePhase);
+    }
+
+    public void updateSequence(String id, List<TrafficPhase> phases) {
         lock.lock();
         try {
-            registry.get(intersectionId).pause();
+            registry.get(id).updateSequence(phases);
         } finally {
             lock.unlock();
         }
     }
 
-    public void resume(String intersectionId) {
+    //helper
+
+    private void withLock(String intersectionId, java.util.function.Consumer<Intersection> action) {
         lock.lock();
         try {
-            registry.get(intersectionId).resume();
+            Intersection intersection = registry.get(intersectionId);
+            action.accept(intersection);
         } finally {
             lock.unlock();
         }

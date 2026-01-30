@@ -1,27 +1,41 @@
 package com.natwest.trafficlightsystem.dto;
 
-import com.natwest.trafficlightsystem.domain.intersection.Intersection;
-import com.natwest.trafficlightsystem.domain.intersection.LightColor;
-import com.natwest.trafficlightsystem.domain.intersection.TrafficPhase;
+import com.natwest.trafficlightsystem.domain.Direction;
+import com.natwest.trafficlightsystem.domain.Intersection;
+import com.natwest.trafficlightsystem.domain.LightColor;
+import com.natwest.trafficlightsystem.domain.TrafficPhase;
 
-import java.time.Instant;
 import java.util.List;
 
-//converts between domain models and API DTOs
-public class IntersectionMapper {
+public final class IntersectionMapper {
 
-    public static IntersectionStateDto toDto(Intersection intersection) {
-        TrafficPhase phase = intersection.getCurrentPhase();
+    private IntersectionMapper() {}
+
+    /*REQUEST → DOMAIN */
+
+    public static List<TrafficPhase> toDomainPhases(SequenceRequestDto request) {
+        return request.phases()
+                .stream()
+                .map(p -> new TrafficPhase(
+                        Direction.valueOf(p.direction()),
+                        LightColor.valueOf(p.color())
+                ))
+                .toList();
+    }
+
+    /* INTERSECTION → STATE DTO */
+
+    public static IntersectionStateDto toStateDto(Intersection intersection) {
 
         List<LightStateDto> lights =
-                intersection.getAllDirections().stream()
-                        .map(direction -> new LightStateDto(
-                                direction.name(),
-                                phase.getGreenDirections().contains(direction)
-                                        ? LightColor.GREEN.name()
-                                        : LightColor.RED.name(),
-                                Instant.now()
-                        ))
+                intersection.getCurrentPhases()
+                        .stream()
+                        .map(phase ->
+                                new LightStateDto(
+                                        phase.direction().name(),
+                                        phase.color().name()
+                                )
+                        )
                         .toList();
 
         return new IntersectionStateDto(
@@ -29,5 +43,29 @@ public class IntersectionMapper {
                 intersection.isPaused(),
                 lights
         );
+    }
+
+    /* DOMAIN → RESPONSE DTO */
+
+    public static PhaseHistoryDto toDto(PhaseHistory history) {
+        return new PhaseHistoryDto(
+                history.getDirection().name(),
+                history.getColor().name(),
+                history.getChangedAt()
+        );
+    }
+
+      /* =======================
+       HISTORY → DTO
+       ======================= */
+
+    public static List<PhaseHistoryDto> toHistoryDtos(List<PhaseHistory> history) {
+        return history.stream()
+                .map(h -> new PhaseHistoryDto(
+                        h.getDirection().name(),
+                        h.getColor().name(),
+                        h.getChangedAt()
+                ))
+                .toList();
     }
 }

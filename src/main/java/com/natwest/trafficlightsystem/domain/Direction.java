@@ -1,5 +1,5 @@
 
-package com.natwest.trafficlightsystem.domain.intersection;
+package com.natwest.trafficlightsystem.domain;
 
 public enum Direction {
     NORTH,

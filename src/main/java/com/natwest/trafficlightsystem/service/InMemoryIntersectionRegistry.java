@@ -1,6 +1,6 @@
 package com.natwest.trafficlightsystem.service;
 
-import com.natwest.trafficlightsystem.domain.intersection.Intersection;
+import com.natwest.trafficlightsystem.domain.Intersection;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;

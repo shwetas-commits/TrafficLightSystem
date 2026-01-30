@@ -1,4 +1,4 @@
-package com.natwest.trafficlightsystem.domain.intersection;
+package com.natwest.trafficlightsystem.domain;
 
 import java.time.Instant;
 
