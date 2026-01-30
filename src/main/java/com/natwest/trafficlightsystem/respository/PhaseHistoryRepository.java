@@ -1,6 +1,6 @@
 package com.natwest.trafficlightsystem.respository;
 
-import com.natwest.trafficlightsystem.dto.PhaseHistory;
+import com.natwest.trafficlightsystem.persistence.entity.PhaseHistory;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

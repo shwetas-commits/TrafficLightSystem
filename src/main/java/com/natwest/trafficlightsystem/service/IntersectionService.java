@@ -3,8 +3,8 @@ package com.natwest.trafficlightsystem.service;
 import com.natwest.trafficlightsystem.domain.Intersection;
 import com.natwest.trafficlightsystem.domain.TrafficPhase;
 import com.natwest.trafficlightsystem.dto.IntersectionStateDto;
-import com.natwest.trafficlightsystem.dto.IntersectionMapper;
-import com.natwest.trafficlightsystem.dto.PhaseHistory;
+import com.natwest.trafficlightsystem.mapper.IntersectionMapper;
+import com.natwest.trafficlightsystem.persistence.entity.PhaseHistory;
 import com.natwest.trafficlightsystem.respository.PhaseHistoryRepository;
 import org.springframework.stereotype.Service;
 

@@ -1,4 +1,4 @@
-package com.natwest.trafficlightsystem.dto;
+package com.natwest.trafficlightsystem.persistence.entity;
 
 import com.natwest.trafficlightsystem.domain.Direction;
 import com.natwest.trafficlightsystem.domain.LightColor;

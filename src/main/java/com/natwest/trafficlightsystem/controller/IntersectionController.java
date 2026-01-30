@@ -3,7 +3,7 @@ package com.natwest.trafficlightsystem.controller;
 import com.natwest.trafficlightsystem.dto.IntersectionStateDto;
 import com.natwest.trafficlightsystem.dto.PhaseHistoryDto;
 import com.natwest.trafficlightsystem.dto.SequenceRequestDto;
-import com.natwest.trafficlightsystem.dto.IntersectionMapper;
+import com.natwest.trafficlightsystem.mapper.IntersectionMapper;
 import com.natwest.trafficlightsystem.service.IntersectionService;
 import jakarta.validation.Valid;
 import org.springframework.scheduling.annotation.Scheduled;

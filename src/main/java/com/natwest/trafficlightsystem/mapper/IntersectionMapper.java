@@ -1,9 +1,14 @@
-package com.natwest.trafficlightsystem.dto;
+package com.natwest.trafficlightsystem.mapper;
 
 import com.natwest.trafficlightsystem.domain.Direction;
 import com.natwest.trafficlightsystem.domain.Intersection;
 import com.natwest.trafficlightsystem.domain.LightColor;
 import com.natwest.trafficlightsystem.domain.TrafficPhase;
+import com.natwest.trafficlightsystem.dto.IntersectionStateDto;
+import com.natwest.trafficlightsystem.dto.LightStateDto;
+import com.natwest.trafficlightsystem.dto.PhaseHistoryDto;
+import com.natwest.trafficlightsystem.dto.SequenceRequestDto;
+import com.natwest.trafficlightsystem.persistence.entity.PhaseHistory;
 
 import java.util.List;
 
