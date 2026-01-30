@@ -1,7 +1,7 @@
 package com.natwest.trafficlightsystem.persistence.entity;
 
-import com.natwest.trafficlightsystem.intersection.Direction;
-import com.natwest.trafficlightsystem.intersection.LightColor;
+import com.natwest.trafficlightsystem.domain.intersection.Direction;
+import com.natwest.trafficlightsystem.domain.intersection.LightColor;
 import jakarta.persistence.*;
 import java.time.Instant;
 

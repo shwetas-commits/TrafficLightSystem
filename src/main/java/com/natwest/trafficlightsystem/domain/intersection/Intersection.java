@@ -1,4 +1,4 @@
-package com.natwest.trafficlightsystem.intersection;
+package com.natwest.trafficlightsystem.domain.intersection;
 
 import java.util.List;
 import java.util.Set;
