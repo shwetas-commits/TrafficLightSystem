@@ -1,10 +1,9 @@
 package com.natwest.trafficlightsystem.domain;
 
-import com.natwest.trafficlightsystem.domain.TrafficPhase;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.*;
 
 public class Intersection {
 
@@ -16,24 +15,33 @@ public class Intersection {
     private int currentPhaseIndex;
     private List<TrafficPhase> phases;
 
+    private final Map<Direction, TrafficLight> lights = new EnumMap<>(Direction.class);
+
     public Intersection(String id, List<TrafficPhase> phases) {
-        this.id = Objects.requireNonNull(id, "intersection id cannot be null");
+        this.id = Objects.requireNonNull(id);
         validatePhases(phases);
         this.phases = new ArrayList<>(phases);
-        this.currentPhaseIndex = 0;
-        this.paused = true;     // safe default
-        this.started = false;
+
+        // initialize all lights as RED
+        for (Direction direction : Direction.values()) {
+            lights.put(direction, new TrafficLight(direction, LightColor.RED));
+        }
+
+        applyPhase(phases.get(0));
     }
 
     /* ----------------- lifecycle commands ----------------- */
 
     public void start() {
+        if (started) {
+            throw new IllegalStateException("Already started");
+        }
         this.started = true;
         this.paused = false;
     }
 
     public void pause() {
-        ensureStarted();
+            ensureStarted();
         this.paused = true;
     }
 
@@ -42,18 +50,28 @@ public class Intersection {
         this.paused = false;
     }
 
+    //phase application logic - lights change color and update since
+
+    private void applyPhase(TrafficPhase phase) {
+        Set<Direction> green = phase.getGreenDirections();
+
+        for (TrafficLight light : lights.values()) {
+            if (green.contains(light.getDirection())) {
+                light.changeColor(LightColor.GREEN);
+            } else {
+                light.changeColor(LightColor.RED);
+            }
+        }
+    }
+
     /* ----------------- phase progression ----------------- */
 
     public void advancePhase() {
         ensureStarted();
-        if (paused) {
-            return;
-        }
-        currentPhaseIndex = (currentPhaseIndex + 1) % phases.size();
-    }
+        if (paused) return;
 
-    public List<TrafficPhase> getCurrentPhases() {
-        return List.copyOf(phases);
+        currentPhaseIndex = (currentPhaseIndex + 1) % phases.size();
+        applyPhase(phases.get(currentPhaseIndex)); // real state transition.
     }
 
     public void updateSequence(List<TrafficPhase> newPhases) {
@@ -70,6 +88,10 @@ public class Intersection {
 
     public List<TrafficPhase> allPhases() {
         return List.copyOf(phases);
+    }
+
+    public Collection<TrafficLight> currentLights() {
+        return List.copyOf(lights.values());
     }
 
     public boolean isPaused() {
@@ -92,22 +114,17 @@ public class Intersection {
         }
     }
 
+    //validates phase sequence correctness
     private void validatePhases(List<TrafficPhase> phases) {
         if (phases == null || phases.isEmpty()) {
             throw new IllegalArgumentException("Traffic phase sequence cannot be empty");
         }
 
-        long greenCount =
-                phases.stream()
-                        .filter(TrafficPhase::isGreen)
-                        .map(TrafficPhase::direction)
-                        .distinct()
-                        .count();
-
-        if (greenCount > 1) {
-            throw new IllegalArgumentException(
-                    "Conflicting directions cannot be green simultaneously"
-            );
+        for (TrafficPhase phase : phases) {
+            if (phase.getGreenDirections() == null || phase.getGreenDirections().isEmpty()) {
+                throw new IllegalArgumentException("Each phase must have at least one green direction");
+            }
         }
     }
+
 }

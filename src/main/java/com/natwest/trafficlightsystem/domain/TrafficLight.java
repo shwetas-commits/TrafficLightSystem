@@ -5,13 +5,20 @@ import java.time.Instant;
 public class TrafficLight {
 
     private final Direction direction;
-    private final LightColor color;
-    private final Instant since;
+    private LightColor color;
+    private Instant since;
 
-    public TrafficLight(Direction direction, LightColor color, Instant since) {
+    public TrafficLight(Direction direction, LightColor color) {
         this.direction = direction;
         this.color = color;
-        this.since = since;
+        this.since = Instant.now();
+    }
+
+    public void changeColor(LightColor newColor) {
+        if (this.color != newColor) {
+            this.color = newColor;
+            this.since = Instant.now();
+        }
     }
 
     public Direction getDirection() {
@@ -26,3 +33,4 @@ public class TrafficLight {
         return since;
     }
 }
+

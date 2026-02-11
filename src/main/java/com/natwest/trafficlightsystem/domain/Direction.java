@@ -2,10 +2,10 @@
 package com.natwest.trafficlightsystem.domain;
 
 public enum Direction {
-    NORTH,
-    SOUTH,
-    EAST,
-    WEST;
+    NORTH, // NORTH(Axis.VERTICAL)
+    SOUTH, // SOUTH(Axis.VERTICAL)
+    EAST, // EAST(Axis.HORIZONTAL)
+    WEST; // WEST(Axis.HORIZONTAL)
 
     public boolean conflictsWith(Direction other) {
         if (this == other) return false;
@@ -18,4 +18,15 @@ public enum Direction {
 
         return (thisIsNS && otherIsEW) || (thisIsEW && otherIsNS);
     }
+
+    /*
+    private final Axis axis;
+
+    Direction(Axis axis) {
+        this.axis = axis;
+    }
+
+    public boolean conflictsWith(Direction other) {
+        return this.axis != other.axis;
+    }*/
 }

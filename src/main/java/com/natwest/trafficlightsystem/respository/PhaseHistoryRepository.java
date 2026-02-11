@@ -9,4 +9,8 @@ public interface PhaseHistoryRepository
         extends JpaRepository<PhaseHistory, Long> {
 
     List<PhaseHistory> findByIntersectionId(String intersectionId);
+
+    List<PhaseHistory> findTop1000ByIntersectionIdOrderByChangedAtDesc(String intersectionId);
+
+    //PageRequest.of(0, 1000, Sort.by("timestamp").descending())
 }

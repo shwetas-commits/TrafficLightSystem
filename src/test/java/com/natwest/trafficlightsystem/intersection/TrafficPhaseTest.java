@@ -1,29 +1,29 @@
 package com.natwest.trafficlightsystem.intersection;
 
 import com.natwest.trafficlightsystem.domain.Direction;
-import com.natwest.trafficlightsystem.domain.LightColor;
 import com.natwest.trafficlightsystem.domain.TrafficPhase;
 import org.junit.jupiter.api.Test;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import java.util.Set;
 
+import static org.assertj.core.api.Assertions.assertThat;
 class TrafficPhaseTest {
 
     @Test
-    void represents_a_green_light_for_a_direction() {
+    void represents_green_directions() {
         TrafficPhase phase =
-                new TrafficPhase(Direction.NORTH, LightColor.GREEN);
+                new TrafficPhase(Set.of(Direction.NORTH, Direction.SOUTH));
 
-        assertThat(phase.direction()).isEqualTo(Direction.NORTH);
-        assertThat(phase.color()).isEqualTo(LightColor.GREEN);
+        assertThat(phase.getGreenDirections())
+                .containsExactlyInAnyOrder(Direction.NORTH, Direction.SOUTH);
     }
 
     @Test
     void is_immutable() {
         TrafficPhase phase =
-                new TrafficPhase(Direction.EAST, LightColor.RED);
+                new TrafficPhase(Set.of(Direction.EAST));
 
-        assertThat(phase.direction()).isEqualTo(Direction.EAST);
-        assertThat(phase.color()).isEqualTo(LightColor.RED);
+        assertThat(phase.getGreenDirections())
+                .containsExactly(Direction.EAST);
     }
 }
