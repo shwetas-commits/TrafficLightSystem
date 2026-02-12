@@ -53,7 +53,7 @@ public class Intersection {
     //phase application logic - lights change color and update since
 
     private void applyPhase(TrafficPhase phase) {
-        Set<Direction> green = phase.getGreenDirections();
+        Set<Direction> green = phase.greenDirections();
 
         for (TrafficLight light : lights.values()) {
             if (green.contains(light.getDirection())) {
@@ -121,7 +121,7 @@ public class Intersection {
         }
 
         for (TrafficPhase phase : phases) {
-            if (phase.getGreenDirections() == null || phase.getGreenDirections().isEmpty()) {
+            if (phase.greenDirections() == null || phase.greenDirections().isEmpty()) {
                 throw new IllegalArgumentException("Each phase must have at least one green direction");
             }
         }

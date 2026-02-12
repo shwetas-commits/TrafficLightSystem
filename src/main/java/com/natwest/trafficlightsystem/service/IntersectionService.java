@@ -1,7 +1,9 @@
 package com.natwest.trafficlightsystem.service;
 
+import com.natwest.trafficlightsystem.domain.Direction;
 import com.natwest.trafficlightsystem.domain.Intersection;
 import com.natwest.trafficlightsystem.domain.TrafficLight;
+import com.natwest.trafficlightsystem.domain.TrafficPhase;
 import com.natwest.trafficlightsystem.dto.IntersectionStateDto;
 import com.natwest.trafficlightsystem.mapper.IntersectionMapper;
 import com.natwest.trafficlightsystem.persistence.entity.PhaseHistory;
@@ -11,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -22,7 +25,7 @@ public class IntersectionService {
     private final InMemoryIntersectionRegistry registry;
     private final PhaseHistoryRepository historyRepository;
 
-    // 🔥 Per intersection lock
+    // Per intersection lock
     private final Map<String, Lock> locks = new ConcurrentHashMap<>();
 
     public IntersectionService(InMemoryIntersectionRegistry registry,
@@ -60,6 +63,18 @@ public class IntersectionService {
         return historyRepository.findTop1000ByIntersectionIdOrderByChangedAtDesc(id);
     }
 
+    public void createIntersection(String id) {
+
+        List<TrafficPhase> defaultPhases = List.of(
+                new TrafficPhase(Set.of(Direction.NORTH, Direction.SOUTH)),
+                new TrafficPhase(Set.of(Direction.EAST, Direction.WEST))
+        );
+
+        Intersection intersection = new Intersection(id, defaultPhases);
+        System.out.println("InteractionId: "+id);
+        registry.save(intersection);
+    }
+
     /* =============================
        SCHEDULER ENTRY POINT
        ============================= */
@@ -90,15 +105,24 @@ public class IntersectionService {
         }
     }
 
+    private Lock getLock(String id) {
+        return locks.computeIfAbsent(id, k -> new ReentrantLock());
+    }
+
     private void withLock(String id, Consumer<Intersection> action) {
-        Lock lock = locks.computeIfAbsent(id, k -> new ReentrantLock());
+        Lock lock = getLock(id);
         lock.lock();
         try {
             Intersection intersection = registry.get(id);
+            if (intersection == null) {
+                throw new IllegalArgumentException("Intersection not found: " + id);
+            }
             action.accept(intersection);
         } finally {
             lock.unlock();
         }
     }
+
+
 }
 

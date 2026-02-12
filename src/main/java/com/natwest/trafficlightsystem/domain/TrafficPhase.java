@@ -4,9 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-public class TrafficPhase {
-
-    private final Set<Direction> greenDirections;
+public record TrafficPhase(Set<Direction> greenDirections) {
 
     public TrafficPhase(Set<Direction> greenDirections) {
         this.greenDirections = Set.copyOf(greenDirections);
@@ -29,9 +27,5 @@ public class TrafficPhase {
                 }
             }
         }
-    }
-
-    public Set<Direction> getGreenDirections() {
-        return greenDirections;
     }
 }

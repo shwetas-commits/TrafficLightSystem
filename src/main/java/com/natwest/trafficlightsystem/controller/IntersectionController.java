@@ -26,6 +26,10 @@ public class IntersectionController {
         return service.getState(id);
     }
 
+    @PostMapping
+    public void create(@PathVariable String id) {
+        service.createIntersection(id);
+    }
 
     @PostMapping("/start")
     public void start(@PathVariable String id) {
@@ -69,7 +73,7 @@ public class IntersectionController {
 
     @Scheduled(fixedRate = 5000)
     void tick() {
-        service.advancePhase("intersection-1");
+        service.advancePhase("I1");
     }
 
 }

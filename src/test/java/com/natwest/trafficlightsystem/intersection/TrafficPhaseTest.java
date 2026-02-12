@@ -14,7 +14,7 @@ class TrafficPhaseTest {
         TrafficPhase phase =
                 new TrafficPhase(Set.of(Direction.NORTH, Direction.SOUTH));
 
-        assertThat(phase.getGreenDirections())
+        assertThat(phase.greenDirections())
                 .containsExactlyInAnyOrder(Direction.NORTH, Direction.SOUTH);
     }
 
@@ -23,7 +23,7 @@ class TrafficPhaseTest {
         TrafficPhase phase =
                 new TrafficPhase(Set.of(Direction.EAST));
 
-        assertThat(phase.getGreenDirections())
+        assertThat(phase.greenDirections())
                 .containsExactly(Direction.EAST);
     }
 }
